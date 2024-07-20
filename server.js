@@ -5,6 +5,7 @@ import courseRoute from './routes/courseRoute.js';
 import userRoute from './routes/userRoute.js';
 import 'dotenv/config'
 import eventRoute from './routes/eventRoute.js';
+import contactRouter from './routes/contactRoute.js';
 
 const app = express();
 const PORT = 4000
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 app.use('/', courseRoute);
 app.use('/', userRoute);
 app.use('/', eventRoute);
+app.use('/', contactRouter);
 
 app.listen(PORT, ()=>{
     console.log(`listening on ${PORT}`);

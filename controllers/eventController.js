@@ -23,26 +23,30 @@ export const getEvents = async (req, res) => {
 };
 
 // Get Single Event
-export const getEventById = async (req, res) => {
+
+export const getEventById = async(req,res)=>{
+    const {id} = req.params
     try {
-        const event = await Event.findById(req.params.id);
-        if (!event) {
-            return res.status(404).json({ message: 'Event not found' });
+        const event = await Event.findById(id);
+        if(!event){
+            return res.status(404).json({message: "Course not found", status: false})
         }
-        res.status(200).json({ event });
+        res.json({message: "event retrieved successfully", status: true, data: event})
     } catch (error) {
-        res.status(500).json({ message: 'Error retrieving event', error });
+        console.log(error);
+        res.status(500).json({message: "Server error", status: false, error:error})
     }
-};
+}
 
 // Update Event
 export const updateEvent = async (req, res) => {
+    const { id } = req.params;
     try {
-        const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const event = await Event.findByIdAndUpdate(id, req.body, { new: true });
         if (!event) {
             return res.status(404).json({ message: 'Event not found' });
         }
-        res.status(200).json({ message: 'Event updated successfully', event });
+        res.status(200).json({ message: 'Event updated successfully updated', event });
     } catch (error) {
         res.status(500).json({ message: 'Error updating event', error });
     }
