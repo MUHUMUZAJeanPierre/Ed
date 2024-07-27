@@ -1,79 +1,52 @@
 import courseModel from "../models/courseModel.js"
 
-export const createCourse = async(req,res)=>{
+export const createCourse = async (req, res) => {
     try {
-        const {courseTitle, courseDescription, courseTeacher} = req.body;
-
-        if( !courseTitle || !courseDescription || !courseTeacher){
-            return res.status(400).json({message: "All fields are required"})
-        }
-        const courseExist = await courseModel.findOne({courseTitle});
-        if(courseExist){
-            return res.status(400).json({message: "Course already exists", status: false})
-        }
-        const newCourse = new courseModel({
-            
-            courseTitle,
-            courseDescription,
-            courseTeacher
-        });
+        const newCourse = new courseModel(req.body);
         await newCourse.save();
-        res.status(201).json({message: "Course created successfully", status: true, data: newCourse})
+        res.status(201).json({ message: 'Course created successfully', newCourse });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({message: "Server error", status: false, error:error})
-    }
-}
-
-export const getAllCourses = async(req,res)=>{
-    try {
-        const courses = await courseModel.find();
-        res.json({message: "Courses retrieved successfully", status: true, data: courses})
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({message: "Server error", status: false, error:error})
-    }
-}
-
-export const getCourseById = async(req,res)=>{
-    const {id} = req.params
-    try {
-        const course = await courseModel.findById(id);
-        if(!course){
-            return res.status(404).json({message: "Course not found", status: false})
-        }
-        res.json({message: "Course retrieved successfully", status: true, data: course})
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({message: "Server error", status: false, error:error})
-    }
-}
-
-export const updateCourse = async (req, res) => {
-    const { id } = req.params; 
-
-    try {
-        const updatedCourse = await courseModel.findByIdAndUpdate(id, req.body, { new: true });
-        if (!updatedCourse) {
-            return res.status(404).json({ message: "Course not found", status: false });
-        }
-        res.status(200).json({ message: "Course updated successfully", status: true, data: updatedCourse });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Server error", status: false, error: error.message });
+        res.status(500).json({ message: 'Error creating course', error });
     }
 };
 
-export const deleteCourse = async(req,res)=>{
+export const getAllCourses = async (req, res) => {
     try {
-        const deletedCourse = await courseModel.findByIdAndDelete(req.params.id);
-        if(!deletedCourse){
-            return res.status(404).json({message: "Course not found", status: false})
-        }
-        res.json({message: "Course deleted successfully", status: true, data: deletedCourse})
+        const courses = await courseModel.find();
+        res.status(200).json(courses);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({message: "Server error", status: false, error:error})
+        res.status(500).json({ message: 'Error fetching courses', error });
     }
-}
+};
+
+export const getCourseById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const course = await courseModel.findById(id);
+        if (!course) return res.status(404).json({ message: 'Course not found' });
+        res.status(200).json(course);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching course', error });
+    }
+};
+
+export const updateCourseById = async (req, res) => {
+    try {
+        const course = await courseModel.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        if (!course) return res.status(404).json({ message: 'Course not found' });
+        res.status(200).json(course);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+export const deleteCourseById = async (req, res) => {
+    try {
+        const course = await courseModel.findByIdAndDelete(req.params.id);
+        if (!course) return res.status(404).json({ message: 'Course not found' });
+        res.status(200).json({ message: 'Course deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 

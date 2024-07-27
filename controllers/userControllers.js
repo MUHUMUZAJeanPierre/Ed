@@ -19,7 +19,17 @@ export const register = async (req, res, next) => {
                 role: role || "student",
             };
             const user = await userModel.create(toSave);
-            res.status(201).json({ message: "User successfully created", user, success: true });
+            
+            // Generate token after registration
+            const secret = process.env.JWT_SECRET || "defaultSecret";
+            const token = jwt.sign({ id: user._id }, secret); // Token expiration set to 1 hour
+            
+            res.status(201).json({ 
+                message: "User successfully created", 
+                user, 
+                token, // Include token in response
+                success: true 
+            });
         }
     } catch (error) {
         res.status(500).json({ message: "Error creating user", error });
@@ -35,8 +45,11 @@ export const login = async (req, res) => {
             const validate = await bcrypt.compare(password, exist.password);
             if (validate) {
                 const secret = process.env.JWT_SECRET || "defaultSecret"; // Use environment variable
-                const token = jwt.sign({ id: exist._id }, secret);
-                res.status(200).json({ message: 'Login successful', token });
+                const token = jwt.sign({ id: exist._id }, secret); // Token expiration set to 1 hour
+                res.status(200).json({ 
+                    message: 'Login successful', 
+                    token 
+                });
             } else {
                 res.status(400).json({ message: "Incorrect password" });
             }
