@@ -1,10 +1,10 @@
 import courseModel from "../models/courseModel.js"
 
-export const createCourse = async (req, res) => {
+export const createCourse = async (req, res,next)=>{
     try {
         const newCourse = new courseModel(req.body);
         await newCourse.save();
-        res.status(201).json({ message: 'Course created successfully', newCourse });
+        res.status(201).json({ message: 'Course created successfully', data:newCourse });
     } catch (error) {
         res.status(500).json({ message: 'Error creating course', error });
     }

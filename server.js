@@ -3,7 +3,7 @@ import { connectDB } from './config/db.js';
 import cors from 'cors';
 import courseRoute from './routes/courseRoute.js';
 import userRoute from './routes/userRoute.js';
-import 'dotenv/config'
+// import 'dotenv/config'
 import eventRoute from './routes/eventRoute.js';
 import contactRouter from './routes/contactRoute.js';
 import pricingController from './routes/pricingRoute.js';

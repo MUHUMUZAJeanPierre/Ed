@@ -21,7 +21,7 @@ export const register = async (req, res, next) => {
             const user = await userModel.create(toSave);
             
             // Generate token after registration
-            const secret = process.env.JWT_SECRET || "defaultSecret";
+            const secret =  "defaultSecret";
             const token = jwt.sign({ id: user._id }, secret); // Token expiration set to 1 hour
             
             res.status(201).json({ 
@@ -36,19 +36,26 @@ export const register = async (req, res, next) => {
     }
 };
 
-// Login User
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const exist = await userModel.findOne({ email });
-        if (exist) {
-            const validate = await bcrypt.compare(password, exist.password);
+        const user = await userModel.findOne({ email });
+        if (user) {
+            const validate = await bcrypt.compare(password, user.password);
             if (validate) {
-                const secret = process.env.JWT_SECRET || "defaultSecret"; // Use environment variable
-                const token = jwt.sign({ id: exist._id }, secret); // Token expiration set to 1 hour
+                const secret =  "defaultSecret"; 
+                const token = jwt.sign({ id: user._id }, secret,); 
+
+                // Send user details and token
                 res.status(200).json({ 
-                    message: 'Login successful', 
-                    token 
+                    message: 'Login successful',
+                    token,
+                    user: {
+                        id: user._id,
+                        name: user.name,
+                        email: user.email,
+                        // Add any other user details you want to include
+                    }
                 });
             } else {
                 res.status(400).json({ message: "Incorrect password" });
